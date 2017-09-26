@@ -27,6 +27,7 @@ __pycache__/
 
 # Standard configuration
 /pyramid_oereb_standard.yml
+/pyramid_oereb_sitn.yml
 /logo_*.png
 
 # Generated files
@@ -34,3 +35,8 @@ __pycache__/
 /test-db/12-create.sql
 /test-db/13-fill.sql
 /docker/logo_*.png
+
+#Dev configuration
+/print/WEB-INF/lib/*.jar
+/development.ini
+/Makefile_francois
