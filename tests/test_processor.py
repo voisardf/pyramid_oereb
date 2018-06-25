@@ -217,3 +217,111 @@ def test_processor_get_legend_entries(law_status):
     outside_plrs = [plr4]
     after_process = Processor.get_legend_entries(inside_plrs, outside_plrs)
     assert len(after_process) == 1
+
+
+def test_processor_get_legend_graphic_multi_view_service(law_status):
+    theme1 = ThemeRecord(u'TEST', {'de': 'Theme 1'})
+    office = OfficeRecord({'de': 'Test Office'})
+    geometries = [GeometryRecord(law_status, datetime.date.today(), Point(1, 1))]
+    legend1 = LegendEntryRecord(
+        ImageRecord('1'.encode('utf-8')),
+        {'de': 'legend1'},
+        u'type1',
+        u'bla',
+        theme1,
+        sub_theme='SubTheme1',
+        view_service_id=1
+    )
+    legend2 = LegendEntryRecord(
+        ImageRecord('1'.encode('utf-8')),
+        {'de': 'legend2'},
+        u'type2',
+        u'bla',
+        theme1,
+        sub_theme='SubTheme1',
+        view_service_id=1
+    )
+    legend3 = LegendEntryRecord(
+        ImageRecord('1'.encode('utf-8')),
+        {'de': 'legend3'},
+        u'type3',
+        u'bla',
+        theme1,
+        sub_theme='SubTheme1',
+        view_service_id=1
+    )
+    legend4 = LegendEntryRecord(
+        ImageRecord('1'.encode('utf-8')),
+        {'de': 'legend4'},
+        u'type1',
+        u'bla',
+        theme1,
+        sub_theme='SubTheme2',
+        view_service_id=2
+    )
+    legend5 = LegendEntryRecord(
+        ImageRecord('1'.encode('utf-8')),
+        {'de': 'legend5'},
+        u'type2',
+        u'bla',
+        theme1,
+        sub_theme='SubTheme2',
+        view_service_id=2
+    )
+    legend6 = LegendEntryRecord(
+        ImageRecord('1'.encode('utf-8')),
+        {'de': 'legend6'},
+        u'type3',
+        u'bla',
+        theme1,
+        sub_theme='SubTheme2',
+        view_service_id=2
+    )
+    view_service1 = ViewServiceRecord(
+        'http://www.test1.url.ch',
+        'http://www.test1.url.ch',
+        legends=[legend1, legend2, legend3]
+    )
+    view_service2 = ViewServiceRecord(
+        'http://www.test2.url.ch',
+        'http://www.test2.url.ch',
+        legends=[legend4, legend5, legend6]
+    )
+    image = ImageRecord('1'.encode('utf-8'))
+    plr1 = PlrRecord(
+        theme1,
+        {'de': 'CONTENT'},
+        law_status,
+        datetime.datetime.now(),
+        office,
+        image,
+        view_service1,
+        geometries,
+        view_service_id=1,
+        sub_theme='SubTheme1',
+        type_code=u'type1',
+    )
+    plr2 = PlrRecord(
+        theme1,
+        {'de': 'CONTENT'},
+        law_status,
+        datetime.datetime.now(),
+        office,
+        image,
+        view_service2,
+        geometries,
+        view_service_id=2,
+        sub_theme='SubTheme2',
+        type_code=u'type2'
+    )
+    inside_plrs = [plr1, plr2]
+    outside_plrs = []
+    after_process = Processor.get_legend_entries(inside_plrs, outside_plrs)
+    plr1 = after_process[0]
+    plr2 = after_process[1]
+    assert len(plr1.view_service.legends) == 2
+    assert plr1.view_service.legends[0].type_code == u'type2'
+    assert plr1.view_service.legends[1].type_code == u'type3'
+    assert len(plr2.view_service.legends) == 2
+    assert plr2.view_service.legends[0].type_code == u'type1'
+    assert plr2.view_service.legends[1].type_code == u'type3'
